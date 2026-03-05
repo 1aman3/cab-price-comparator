@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CabCompare Results</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+min-height:100vh;
+background:linear-gradient(135deg,#141e30,#243b55);
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:flex-start;
+padding-top:60px;
+color:white;
+}
+
+/* header */
+
+.header{
+font-size:28px;
+font-weight:600;
+margin-bottom:40px;
+letter-spacing:1px;
+}
+
+/* results container */
+
+.results{
+display:flex;
+flex-direction:column;
+gap:25px;
+width:420px;
+}
+
+/* ride cards */
+
+.card{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:22px;
+
+border-radius:18px;
+
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(18px);
+
+box-shadow:
+0 10px 30px rgba(0,0,0,0.4),
+inset 0 0 0 1px rgba(255,255,255,0.08);
+
+transition:0.3s;
+}
+
+.card:hover{
+transform:translateY(-6px) scale(1.02);
+box-shadow:0 20px 40px rgba(0,0,0,0.5);
+}
+
+/* left section */
+
+.service{
+font-size:20px;
+font-weight:600;
+}
+
+/* price */
+
+.price{
+font-size:22px;
+font-weight:600;
+color:#00ffa6;
+}
+
+/* button */
+
+.book-btn{
+padding:10px 16px;
+border-radius:10px;
+border:none;
+
+background:linear-gradient(90deg,#ff7a18,#ffb347);
+color:white;
+font-weight:500;
+
+cursor:pointer;
+transition:0.3s;
+}
+
+.book-btn:hover{
+transform:scale(1.08);
+}
+
+/* best badge */
+
+.best{
+position:absolute;
+top:-14px;
+right:10px;
+
+background:#00ffa6;
+color:black;
+
+padding:4px 10px;
+border-radius:8px;
+
+font-size:11px;
+font-weight:600;
+}
+
+/* wrapper for badge */
+
+.card-wrapper{
+position:relative;
+padding-top:10px;
+}
+
+/* back button */
+
+.back{
+margin-top:40px;
+padding:12px 20px;
+
+background:rgba(255,255,255,0.15);
+border:none;
+border-radius:10px;
+color:white;
+
+cursor:pointer;
+transition:0.3s;
+}
+
+.back:hover{
+background:rgba(255,255,255,0.25);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+Best Ride Options 🚖
+</div>
+
+<div class="results">
+
+{% set cheapest = fares.values()|min %}
+
+{% for service, price in fares.items() %}
+
+<div class="card-wrapper">
+
+{% if price == cheapest %}
+<div class="best">BEST PRICE</div>
+{% endif %}
+
+<div class="card">
+
+<div class="service">
+{{ service }}
+</div>
+
+<div class="price">
+₹{{ price }}
+</div>
+
+<a href="{{ links[service] }}" target="_blank">
+<button class="book-btn">
+Book
+</button>
+</a>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+<a href="/">
+<button class="back">
+Search Again
+</button>
+</a>
+
+</body>
+</html>
