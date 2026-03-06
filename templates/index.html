@@ -6,7 +6,27 @@
 <title>CabCompare</title>
 
 <style>
+    /* Prevent extra horizontal space */
+* {
+    box-sizing: border-box;
+}
 
+body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+*{
+box-sizing: border-box;
+}
+.container {
+    width: 100%;
+    max-width: 100%;
+}
+
+body{
+overflow-x: hidden;
+}
 body{
 margin:0;
 font-family:Arial, sans-serif;
@@ -52,7 +72,14 @@ text-align:center;
 margin-top:80px;
 padding:20px;
 }
-
+body{
+margin:0;
+font-family:Arial, sans-serif;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+min-height:100vh;
+color:white;
+overflow-x:hidden;
+}
 .hero-title{
 font-size:42px;
 font-weight:700;
@@ -73,7 +100,8 @@ background:rgba(255,255,255,0.08);
 padding:30px;
 border-radius:20px;
 backdrop-filter:blur(15px);
-width:400px;
+width:90%;
+max-width:400px;
 margin:auto;
 }
 
@@ -239,22 +267,25 @@ align-items:center;
 width:90%;
 }
 
-input{
-width:90%;
+input, button{
+width:100%;
+box-sizing:border-box;
 }
 
-button{
-width:90%;
 }
-
+form{
+width:100%;
+max-width:500px;
+margin:auto;
+display:flex;
+flex-direction:column;
+gap:15px;
 }
 
 </style>
 
 </head>
-<footer class="footer">
-© 2026 CabCompare. All rights reserved.
-</footer>
+
 <body>
 
 
@@ -380,7 +411,9 @@ document.getElementById("loader").style.display="flex";
 }
 
 </script>
-
+<footer class="footer">
+© 2026 CabCompare. All rights reserved.
+</footer>
 
 </body>
 
