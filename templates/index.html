@@ -2,7 +2,7 @@
 <html>
 
 <head>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CabCompare</title>
 
 <style>
@@ -228,6 +228,26 @@ padding:25px;
 font-size:13px;
 opacity:0.6;
 }
+@media (max-width: 768px){
+
+.results-container{
+flex-direction:column;
+align-items:center;
+}
+
+.result-card{
+width:90%;
+}
+
+input{
+width:90%;
+}
+
+button{
+width:90%;
+}
+
+}
 
 </style>
 
@@ -257,11 +277,11 @@ Compare Uber, Ola and Rapido prices instantly and save money on every trip.
 
 <div class="search-card">
 
-<form action="/compare" method="POST">
+<form action="/search" method="POST">
 
-<input type="text" name="pickup" placeholder="Enter pickup location" required>
+<input type="text" name="source" placeholder="Enter pickup location">
 
-<input type="text" name="drop" placeholder="Enter destination" required>
+<input type="text" name="destination" placeholder="Enter destination">
 
 <button type="submit" onclick="showLoader()">
 Compare Prices
