@@ -281,7 +281,33 @@ display:flex;
 flex-direction:column;
 gap:15px;
 }
+.input-group {
+position: relative;
+width: 100%;
+}
 
+.suggestions {
+position: absolute;
+top: 100%;
+left: 0;
+right: 0;
+background: white;
+color: black;
+border-radius: 10px;
+max-height: 200px;
+overflow-y: auto;
+z-index: 1000;
+}
+
+.suggestion-item {
+padding: 10px;
+cursor: pointer;
+border-bottom: 1px solid #eee;
+}
+
+.suggestion-item:hover {
+background: #f2f2f2;
+}
 </style>
 
 </head>
@@ -310,9 +336,38 @@ Compare Uber, Ola and Rapido prices instantly and save money on every trip.
 
 <form action="/search" method="POST">
 
-<input type="text" name="source" placeholder="Enter pickup location">
+<div class="input-group">
 
-<input type="text" name="destination" placeholder="Enter destination">
+<input 
+type="text" 
+name="source" 
+id="source"
+placeholder="Enter pickup location"
+autocomplete="off"
+onkeyup="fetchSuggestions(this.value, 'source-suggestions')"
+>
+<input type="hidden" name="source_lat" id="source_lat">
+<input type="hidden" name="source_lon" id="source_lon">
+<div id="source-suggestions" class="suggestions"></div>
+
+</div>
+
+<div class="input-group">
+
+<input 
+type="text" 
+name="destination" 
+id="destination"
+placeholder="Enter destination"
+autocomplete="off"
+onkeyup="fetchSuggestions(this.value, 'destination-suggestions')"
+>
+<input type="hidden" name="dest_lat" id="dest_lat">
+<input type="hidden" name="dest_lon" id="dest_lon">
+
+<div id="destination-suggestions" class="suggestions"></div>
+
+</div>
 
 <button type="submit" onclick="showLoader()">
 Compare Prices
@@ -407,6 +462,85 @@ Used by smart commuters to avoid overpaying for rides
 function showLoader(){
 
 document.getElementById("loader").style.display="flex";
+
+}
+
+let typingTimer;
+
+function fetchSuggestions(query, containerId){
+
+clearTimeout(typingTimer);
+
+typingTimer = setTimeout(async () => {
+
+if(query.length < 3){
+
+document.getElementById(containerId).innerHTML = "";
+return;
+
+}
+
+try {
+
+let url = `/suggest?q=${encodeURIComponent(query)}`;
+
+let response = await fetch(url);
+
+let data = await response.json();
+
+let suggestionsBox = document.getElementById(containerId);
+
+suggestionsBox.innerHTML = "";
+
+data.forEach(place => {
+
+let div = document.createElement("div");
+
+div.classList.add("suggestion-item");
+
+/* Show place name */
+div.innerText = place.name;
+
+div.onclick = function(){
+
+let inputId = containerId.replace("-suggestions","");
+
+/* Fill input */
+document.getElementById(inputId).value = place.name;
+
+/* Save coordinates */
+
+if(inputId === "source"){
+
+document.getElementById("source_lat").value = place.lat;
+document.getElementById("source_lon").value = place.lon;
+
+}
+
+if(inputId === "destination"){
+
+document.getElementById("dest_lat").value = place.lat;
+document.getElementById("dest_lon").value = place.lon;
+
+}
+
+suggestionsBox.innerHTML = "";
+
+};
+
+suggestionsBox.appendChild(div);
+
+});
+
+}
+
+catch(error){
+
+console.log("Suggestion error:", error);
+
+}
+
+}, 600);
 
 }
 

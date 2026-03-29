@@ -1,6 +1,8 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import requests
 import math
+import random
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -48,24 +50,122 @@ def calculate_distance(lat1, lon1, lat2, lon2):
 
 # -------- FARE ENGINE --------
 def calculate_fares(distance):
+    fares = {}
 
-    uber = round(50 + (distance * 10), 2)
-    ola = round(45 + (distance * 9), 2)
-    rapido = round(40 + (distance * 8), 2)
+    # Get current hour
+    hour = datetime.now().hour
 
-    return {
-        "Uber": uber,
-        "Ola": ola,
-        "Rapido": rapido
-    }
+    # Traffic factor
+    if 8 <= hour <= 11 or 17 <= hour <= 21:
+        traffic_factor = 1.25
+    elif 22 <= hour or hour <= 6:
+        traffic_factor = 0.9
+    else:
+        traffic_factor = 1.0
 
+    # Surge factor
+    surge_factor = random.uniform(0.95, 1.35)
+
+    # ------------------------
+    # Uber
+    # ------------------------
+
+    uber_base = 50
+    uber_per_km = 12
+    uber_minimum = 80
+
+    uber_fare = uber_base + (distance * uber_per_km)
+
+    uber_fare *= traffic_factor
+    uber_fare *= surge_factor
+
+    uber_fare += random.uniform(-5, 5)
+
+    uber_fare = max(uber_fare, uber_minimum)
+
+    fares["Uber"] = round(uber_fare)
+
+    # ------------------------
+    # Ola
+    # ------------------------
+
+    ola_base = 45
+    ola_per_km = 11
+    ola_minimum = 75
+
+    ola_fare = ola_base + (distance * ola_per_km)
+
+    ola_fare *= traffic_factor
+    ola_fare *= surge_factor
+
+    ola_fare += random.uniform(-5, 5)
+
+    ola_fare = max(ola_fare, ola_minimum)
+
+    fares["Ola"] = round(ola_fare)
+
+    # ------------------------
+    # Rapido
+    # ------------------------
+
+    rapido_base = 25
+    rapido_per_km = 8
+    rapido_minimum = 40
+
+    rapido_fare = rapido_base + (distance * rapido_per_km)
+
+    rapido_fare *= traffic_factor
+    rapido_fare *= surge_factor
+
+    rapido_fare += random.uniform(-5, 5)
+
+    rapido_fare = max(rapido_fare, rapido_minimum)
+
+    fares["Rapido"] = round(rapido_fare)
+
+    return fares
 
 # -------- HOME PAGE --------
 @app.route("/")
 def home():
     return render_template("index.html")
 
+@app.route("/suggest")
+def suggest():
 
+    query = request.args.get("q")
+
+    if not query:
+        return jsonify([])
+
+    url = "https://nominatim.openstreetmap.org/search"
+
+    params = {
+        "q": query,
+        "format": "json",
+        "limit": 5,
+        "countrycodes": "in"
+    }
+
+    headers = {
+        "User-Agent": "CabCompareApp"
+    }
+
+    response = requests.get(url, params=params, headers=headers)
+
+    data = response.json()
+
+    suggestions = []
+
+    for place in data:
+
+        suggestions.append({
+            "name": place["display_name"],
+            "lat": place["lat"],
+            "lon": place["lon"]
+        })
+
+    return jsonify(suggestions)
 # -------- SEARCH ROUTE --------
 @app.route("/search", methods=["POST"])
 def search():
