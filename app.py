@@ -202,5 +202,34 @@ def search():
     )
 
 
+
+   
+   
+@app.route("/reverse_geocode")
+def reverse_geocode():
+
+    lat = request.args.get("lat")
+    lon = request.args.get("lon")
+
+    url = "https://nominatim.openstreetmap.org/reverse"
+
+    params = {
+        "lat": lat,
+        "lon": lon,
+        "format": "json"
+    }
+
+    headers = {
+        "User-Agent": "CabCompareApp"
+    }
+
+    response = requests.get(url, params=params, headers=headers)
+
+    data = response.json()
+
+    name = data.get("display_name", "Current Location")
+
+    return jsonify({"name": name})
+
 if __name__ == "__main__":
     app.run(debug=True)

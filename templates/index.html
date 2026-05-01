@@ -114,6 +114,7 @@ border-radius:10px;
 font-size:14px;
 }
 
+
 .search-card button{
 width:100%;
 padding:14px;
@@ -364,6 +365,9 @@ onkeyup="fetchSuggestions(this.value, 'destination-suggestions')"
 >
 <input type="hidden" name="dest_lat" id="dest_lat">
 <input type="hidden" name="dest_lon" id="dest_lon">
+<button type="button" onclick="useMyLocation()" style="margin-bottom:10px;">
+📍 Use My Current Location
+</button>
 
 <div id="destination-suggestions" class="suggestions"></div>
 
@@ -543,7 +547,46 @@ console.log("Suggestion error:", error);
 }, 600);
 
 }
+function useMyLocation(){
 
+if (!navigator.geolocation){
+
+alert("Geolocation not supported");
+return;
+
+}
+
+navigator.geolocation.getCurrentPosition(
+
+async function(position){
+
+let lat = position.coords.latitude;
+let lon = position.coords.longitude;
+
+/* Call backend to convert to address */
+
+let response = await fetch(`/reverse_geocode?lat=${lat}&lon=${lon}`);
+
+let data = await response.json();
+
+/* Fill input */
+document.getElementById("source").value = data.name;
+
+/* Save coordinates */
+document.getElementById("source_lat").value = lat;
+document.getElementById("source_lon").value = lon;
+
+},
+
+function(error){
+
+alert("Unable to get location");
+
+}
+
+);
+
+}
 </script>
 <footer class="footer">
 © 2026 CabCompare. All rights reserved.
