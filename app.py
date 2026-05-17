@@ -52,76 +52,68 @@ def calculate_distance(lat1, lon1, lat2, lon2):
 def calculate_fares(distance):
     fares = {}
 
-    # Get current hour
+    # Current hour for peak-hour adjustment
     hour = datetime.now().hour
 
-    # Traffic factor
+    # -------------------------
+    # Traffic / Time Factor
+    # -------------------------
     if 8 <= hour <= 11 or 17 <= hour <= 21:
-        traffic_factor = 1.25
+        traffic_factor = 1.20   # Peak hours
     elif 22 <= hour or hour <= 6:
-        traffic_factor = 0.9
+        traffic_factor = 0.95   # Late night
     else:
-        traffic_factor = 1.0
+        traffic_factor = 1.00   # Normal hours
 
-    # Surge factor
-    surge_factor = random.uniform(0.95, 1.35)
+    # -------------------------
+    # Deterministic Surge Factor
+    # (same distance = same surge)
+    # -------------------------
+    surge_seed = int(distance * 10) % 7
+    surge_factor = 1.00 + (surge_seed * 0.02)
+    # Possible values: 1.00 to 1.12
 
-    # ------------------------
-    # Uber
-    # ------------------------
-
+    # ==================================================
+    # UBER MINI CAB
+    # ==================================================
     uber_base = 50
-    uber_per_km = 12
+    uber_per_km = 11.5
     uber_minimum = 80
 
     uber_fare = uber_base + (distance * uber_per_km)
-
     uber_fare *= traffic_factor
     uber_fare *= surge_factor
-
-    uber_fare += random.uniform(-5, 5)
-
     uber_fare = max(uber_fare, uber_minimum)
 
-    fares["Uber"] = round(uber_fare)
+    fares["Uber Mini Cab"] = round(uber_fare)
 
-    # ------------------------
-    # Ola
-    # ------------------------
-
-    ola_base = 45
-    ola_per_km = 11
+    # ==================================================
+    # OLA MINI CAB
+    # ==================================================
+    ola_base = 48
+    ola_per_km = 11.2
     ola_minimum = 75
 
     ola_fare = ola_base + (distance * ola_per_km)
-
     ola_fare *= traffic_factor
     ola_fare *= surge_factor
-
-    ola_fare += random.uniform(-5, 5)
-
     ola_fare = max(ola_fare, ola_minimum)
 
-    fares["Ola"] = round(ola_fare)
+    fares["Ola Mini Cab"] = round(ola_fare)
 
-    # ------------------------
-    # Rapido
-    # ------------------------
-
-    rapido_base = 25
-    rapido_per_km = 8
+    # ==================================================
+    # RAPIDO BIKE
+    # ==================================================
+    rapido_base = 22
+    rapido_per_km = 7.5
     rapido_minimum = 40
 
     rapido_fare = rapido_base + (distance * rapido_per_km)
-
     rapido_fare *= traffic_factor
     rapido_fare *= surge_factor
-
-    rapido_fare += random.uniform(-5, 5)
-
     rapido_fare = max(rapido_fare, rapido_minimum)
 
-    fares["Rapido"] = round(rapido_fare)
+    fares["Rapido Bike"] = round(rapido_fare)
 
     return fares
 
