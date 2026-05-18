@@ -179,10 +179,10 @@ def search():
     fares = calculate_fares(distance)
 
     links = {
-        "Uber": "https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]={destination}",
-        "Ola": "https://book.olacabs.com/",
-        "Rapido": "https://rapido.bike/"
-    }
+    "Uber Mini Cab": f"https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]={destination}",
+    "Ola Mini Cab": "https://book.olacabs.com/",
+    "Rapido Bike": "https://rapido.bike/"
+}
 
     return render_template(
         "results.html",
